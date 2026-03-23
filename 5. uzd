@@ -1,0 +1,17 @@
+# Ceļš uz Errors.txt (Documents mapē)
+$docPath = [Environment]::GetFolderPath("MyDocuments")
+$filePath = Join-Path $docPath "Errors.txt"
+
+# Izveido arhīva nosaukumu ar datumu
+$date = Get-Date -Format "yyyy-MM-dd"
+$zipPath = Join-Path $docPath "Atskaite_$date.zip"
+
+# Izveido ZIP arhīvu
+Compress-Archive -Path $filePath -DestinationPath $zipPath -Force
+
+# Nolasa arhīva izmēru
+$size = (Get-Item $zipPath).Length / 1MB
+
+# Izvada informāciju
+Write-Host "Arhīvs izveidots: $zipPath"
+Write-Host ("Izmērs: {0:N2} MB" -f $size)
