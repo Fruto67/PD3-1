@@ -1,0 +1,39 @@
+# Iegūst C: diska informāciju
+$disk = Get-PSDrive -Name C
+
+# Aprēķina brīvās vietas procentu
+$freePercent = ($disk.Free / ($disk.Used + $disk.Free)) * 100
+
+# Nosaka log faila ceļu
+$docPath = [Environment]::GetFolderPath("MyDocuments")
+$logPath = Join-Path $docPath "Apkope.log"
+
+# Laiks
+$time = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
+
+if ($freePercent -lt 25) {
+    # Saglabā sākuma brīvo vietu
+    $before = $disk.Free
+
+    # Iztīra TEMP mapi
+    Remove-Item "$env:TEMP\*" -Recurse -Force -ErrorAction SilentlyContinue
+
+    # Iztīra Recycle Bin
+    Clear-RecycleBin -Force -ErrorAction SilentlyContinue
+
+    # Atjauno diska informāciju
+    $disk = Get-PSDrive -Name C
+    $after = $disk.Free
+
+    # Aprēķina atbrīvoto vietu GB
+    $freedGB = ($after - $before) / 1GB
+
+    # Ieraksta log failā
+    Add-Content $logPath ("[$time] Tīrīšana veikta. Atbrīvoti {0:N2} GB." -f $freedGB)
+
+} else {
+    # Ja pietiek vietas
+    Add-Content $logPath "[$time] Vieta pietiekama."
+}
+
+Write-Output "Rezultāts saglabāts: $logPath"
