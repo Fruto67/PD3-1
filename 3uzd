@@ -1,0 +1,21 @@
+$errors = Get-WinEvent -FilterHashtable @{
+    LogName='System'
+    Level=2
+    StartTime=(Get-Date).AddDays(-7)
+}
+
+$path = "$([Environment]::GetFolderPath('MyDocuments'))\Errors.txt"
+
+$status = if ($errors.Count -gt 10) {
+    "[KRITISKI] Sistēma ir nestabila!"
+} else {
+    "[OK] Kļūdu līmenis normāls."
+}
+
+$status | Out-File $path
+
+$errors | ForEach-Object {
+    "$($_.TimeCreated) - $($_.Message)"
+} | Out-File $path -Append
+
+Write-Output "Saglabāts: $path"
