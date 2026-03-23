@@ -1,0 +1,16 @@
+# Iegūst winget upgrade sarakstu
+$output = winget upgrade
+
+# Atlasām tikai rindas ar programmām (izlaižam header)
+$apps = $output | Select-Object -Skip 2 | Where-Object { $_ -match '\S' }
+
+# Saskaita programmas ar pieejamiem atjauninājumiem
+$count = $apps.Count
+
+# Izvada sarakstu
+Write-Host "Programmas ar pieejamiem atjauninājumiem:"
+$apps | ForEach-Object { Write-Host $_ }
+
+# Izvada kopsavilkumu
+Write-Host "-----------------------------------"
+Write-Host "Kopā pieejami atjauninājumi: $count"
