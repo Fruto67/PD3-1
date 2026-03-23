@@ -1,0 +1,14 @@
+# Iegūst visus procesus, izslēdz svchost
+$processes = Get-Process | Where-Object { $_.ProcessName -ne "svchost" }
+
+# Sakārto pēc RAM patēriņa (WorkingSet) dilstoši un paņem top 5
+$top5 = $processes | Sort-Object -Property WorkingSet -Descending | Select-Object -First 5
+
+# Aprēķina kopējo RAM (baitos)
+$totalRAMBytes = ($top5 | Measure-Object -Property WorkingSet -Sum).Sum
+
+# Pārvērš megabaitos
+$totalRAMMB = $totalRAMBytes / 1MB
+
+# Izvada rezultātu ar 1 ciparu aiz komata
+Write-Output ("Top 5 procesu total RAM: {0:N1} MB" -f $totalRAMMB)
